@@ -1,12 +1,12 @@
 "use client"
 
 import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
 import { useEffect, useState } from "react"
 import io from 'socket.io-client';
 import { Room } from '@/types';
 import Image from 'next/image'
 import Drawer from "@/components/drawer";
+import ThemeButton from '@/components/changeThemeButton'
 
 const socket = io('https://lounge-rev.deno.dev/');
 
@@ -48,27 +48,32 @@ export default function Home() {
     //dom
     if (!isJoined) {
         return (<>
-            <h1 className="text-center text-lg">部屋に参加</h1>
-            <div className="flex place-content-center gap-x-4">
-                <TextField label="参加名" variant="standard" onChange={(e) => { setJoinName(e.target.value) }} />
-                <Button onClick={handleJoin} variant="outlined">参加</Button>
+            <div className="max-w-lg p-4 mx-auto">
+                <h1 className="text-center text-2xl my-8">部屋に参加</h1>
+                <div className="flex place-content-center gap-x-4">
+                    <input onChange={(e) => { setJoinName(e.target.value) }} className="py-3 px-4 border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" />
+                    <Button onClick={handleJoin} variant="outlined">参加</Button>
+                </div>
             </div>
+            <ThemeButton />
         </>)
     }
     return (
         <>
             {room?.status == 'waiting' ?
                 <>
-                    <div className="mt-4">
-                        <h3 className="text-lg font-bold">参加者一覧</h3>
-                        <ul>
-                            {room?.participants.map((participant) => (
-                                <li key={participant.id}>
-                                    {participant.name}
-                                </li>
-                            ))}
-                        </ul>
-                        <Button onClick={handleGameStart} variant="outlined">ゲーム開始</Button>
+                    <div className="max-w-lg mx-auto p-4">
+                        <div>
+                            <h3 className="text-xl font-bold text-center my-4">参加者一覧</h3>
+                            <ul className="m-4">
+                                {room?.participants.map((participant) => (
+                                    <li className="text-lg list-disc" key={participant.id}>
+                                        {participant.name}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Button onClick={handleGameStart} variant="outlined">ゲーム開始</Button>
+                        </div>
                     </div>
                 </>
                 : <></>}
@@ -76,9 +81,9 @@ export default function Home() {
                 <h1 className="text-center text-2xl my-4">お題 {room?.currentTopic}</h1>
                 <p className="text-center">{room?.currentRound}ラウンド目 / {room?.completedRounds}回一致</p>
                 <Drawer onSubmit={submitAnswer} />
-                <div>
+                <div className="max-w-lg mx-auto p-4">
                     <h3 className="text-lg font-bold">書き終わった人</h3>
-                    <ul>
+                    <ul className="my-4">
                         {room?.participants.map((participant) => {
                             if (participant.hasSubmitted) {
                                 return (
@@ -89,7 +94,8 @@ export default function Home() {
                             }
                         })}
                     </ul>
-                    <Button onClick={handleFinishAnswer}>回答を終了</Button>
+                    <Button variant="outlined" onClick={handleFinishAnswer}>回答を締め切る</Button>
+                    <p>※回答開示画面に移動します</p>
                 </div>
             </> : <></>}
             {room?.status == "reviewing" ? <>
@@ -100,17 +106,18 @@ export default function Home() {
                             <div>
                                 <h4>{participant.name}</h4>
                                 {participant.answer && (
-                                    <Image width={480} height={270} src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md" />
+                                    <Image width={480} height={270} src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md bg-white" />
                                 )}
                             </div>
                         </div>
                     ))}
                 </div>
-                <div className="flex place-content-center gap-x-4">
-                    <Button onClick={handleComplete}>揃った！</Button>
-                    <Button onClick={handleNext}>揃わず...</Button>
+                <div className="flex place-content-center gap-x-4 my-4">
+                    <Button variant="outlined" onClick={handleComplete}>揃った！</Button>
+                    <Button variant="outlined" onClick={handleNext}>揃わず...</Button>
                 </div>
             </> : <></>}
+            <ThemeButton />
         </>
     )
 }

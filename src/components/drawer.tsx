@@ -100,7 +100,7 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
 
     return (
         <>
-            <div className="flex place-content-center">
+            <div className="flex place-content-center ">
                 <Stage
                     width={480}
                     height={270}
@@ -111,9 +111,9 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                     ref={stageRef}
-                    className="border-2 rounded-md"
+                    className="border-2 rounded-md bg-white"
                 >
-                    <Layer >
+                    <Layer>
                         {lines.map((line, i) => (
                             <Line
                                 key={i}
@@ -132,22 +132,26 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                 </Stage>
 
             </div>
-            <div className="flex place-content-center">
-                <IconButton
-                    color={tool === "pen" ? "primary" : "default"}
-                >
-                    <LuPencil />
-                </IconButton>
-                <IconButton onClick={onClickResetCanvas}>
-                    <FaMagic />
-                </IconButton>
-                <IconButton onClick={handleUndo}>
-                    <FaUndo />
-                </IconButton>
-            </div>
-            <div className="flex place-content-center">
+            <div className="flex place-content-center items-center">
+                <div className="bg-white inline-block rounded-full p-2 m-4">
+                    <div className="flex place-content-center">
+                        <IconButton
+                            color={tool === "pen" ? "primary" : "default"}
+                        >
+                            <LuPencil />
+                        </IconButton>
+                        <IconButton onClick={onClickResetCanvas}>
+                            <FaMagic />
+                        </IconButton>
+                        <IconButton onClick={handleUndo}>
+                            <FaUndo />
+                        </IconButton>
+
+                    </div>
+                </div>
                 <Button onClick={handleHand} variant="outlined">回答</Button>
             </div>
+            <p className="text-center">最後に回答したものが送信されます</p>
         </>
     );
 };
