@@ -94,13 +94,15 @@ export default function Home() {
             </> : <></>}
             {room?.status == "reviewing" ? <>
                 <h1 className="text-center text-2xl my-4">お題 {room?.currentTopic}</h1>
-                <div className="flex gap-4">
+                <div className="grid grid-cols-2 gap-4">
                     {room.participants.map((participant) => (
-                        <div key={participant.id} className="">
-                            <h4>{participant.name}</h4>
-                            {participant.answer && (
-                                <Image width={480} height={270} src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md" />
-                            )}
+                        <div key={participant.id} className="flex place-content-center">
+                            <div>
+                                <h4>{participant.name}</h4>
+                                {participant.answer && (
+                                    <Image width={480} height={270} src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md" />
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

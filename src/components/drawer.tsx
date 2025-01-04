@@ -49,16 +49,17 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
     };
     const handleTouchStart = (e: any) => {
         e.evt.preventDefault();
-        const point = e.target.getStage().getPointerPosition();
+        isDrawing.current = true;
+        const position = e.target.getStage().getPointerPosition();
         setLines([
             ...lines,
             {
                 tool,
-                points: [point.x, point.y],
+                points: [position.x, position.y],
+                color: "#333",
                 strokeWidth: 1,
             },
         ]);
-        isDrawing.current = true;
     };
 
     const handleTouchMove = (e: any) => {
