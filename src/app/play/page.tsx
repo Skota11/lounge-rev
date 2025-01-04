@@ -4,7 +4,8 @@ import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import { useEffect, useState } from "react"
 import io from 'socket.io-client';
-import { Room, Participant } from '@/types';
+import { Room } from '@/types';
+import Image from 'next/image'
 import Drawer from "@/components/drawer";
 
 const socket = io('http://localhost:8000');
@@ -38,7 +39,6 @@ export default function Home() {
     useEffect(() => {
         socket.on("roomUpdate", (updatedRoom) => {
             setRoom(updatedRoom);
-            console.log(room)
         });
 
         return () => {
@@ -99,7 +99,7 @@ export default function Home() {
                         <div key={participant.id} className="">
                             <h4>{participant.name}</h4>
                             {participant.answer && (
-                                <img src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md" />
+                                <Image width={480} height={270} src={participant.answer} alt={`${participant.name}の回答`} className="border-2 rounded-md" />
                             )}
                         </div>
                     ))}

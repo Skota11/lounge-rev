@@ -67,7 +67,7 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
             return;
         }
         const point = e.target.getStage().getPointerPosition();
-        let lastLine = lines[lines.length - 1];
+        const lastLine = lines[lines.length - 1];
         lastLine.points = lastLine.points.concat([point.x, point.y]);
         lines.splice(lines.length - 1, 1, lastLine);
         setLines([...lines]);
