@@ -8,7 +8,7 @@ import { Room } from '@/types';
 import Image from 'next/image'
 import Drawer from "@/components/drawer";
 
-const socket = io('http://localhost:8000');
+const socket = io('https://lounge-rev.deno.dev/');
 
 export default function Home() {
     const [isJoined, setIsJoined] = useState(false)
