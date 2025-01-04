@@ -51,7 +51,7 @@ export default function Home() {
             <div className="max-w-lg p-4 mx-auto">
                 <h1 className="text-center text-2xl my-8">部屋に参加</h1>
                 <div className="flex place-content-center gap-x-4">
-                    <input onChange={(e) => { setJoinName(e.target.value) }} className="py-3 px-4 border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" />
+                    <input onChange={(e) => { setJoinName(e.target.value) }} className="border-2 py-3 px-4 border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="参加する名前" />
                     <Button onClick={handleJoin} variant="outlined">参加</Button>
                 </div>
             </div>
@@ -64,7 +64,7 @@ export default function Home() {
                 <>
                     <div className="max-w-lg mx-auto p-4">
                         <div>
-                            <h3 className="text-xl font-bold text-center my-4">参加者一覧</h3>
+                            <h3 className="text-xl font-bold text-center my-4">現在の参加者一覧</h3>
                             <ul className="m-4">
                                 {room?.participants.map((participant) => (
                                     <li className="text-lg list-disc" key={participant.id}>
