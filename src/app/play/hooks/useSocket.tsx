@@ -26,14 +26,18 @@ export function useSocket() {
     }
     return socket;
 }
-
+/**
+ * Socket.ioのイベントをリッスンし、クリーンアップするフック
+ * @param ev リッスンするイベント名
+ * @param cb イベントリスナ
+ */
 export function useSocketOn<Ev extends keyof ServerToClient>(
     ev: Ev,
     cb: ServerToClient[Ev]
 ) {
     const socket = useSocket();
     useEffect(() => {
-        // もっといい方法があるなら教えてくださいよ
+        // 型の解決方法が思いつかない
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         socket.on(ev, cb as any);
         return () => {

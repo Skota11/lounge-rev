@@ -4,6 +4,8 @@ import { serve } from "https://deno.land/std@0.140.0/http/server.ts";
 // @ts-expect-error deno integration
 import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 import type { ClientToServer, ServerToClient } from "../src/types/socketio.ts";
+
+import type { Room } from "@/types";
 // @ts-expect-error deno integration
 import { getRandomTopic } from "./topics.ts";
 
@@ -27,7 +29,7 @@ interface GameState {
             answer?: string;
         }
     >;
-    currentTopic?: string;
+    currentTopic: string | null;
     currentRound: number;
     completedRounds: number;
     status: "waiting" | "playing" | "reviewing" | "finished";
@@ -38,6 +40,7 @@ let gameState: GameState = {
     currentRound: 0,
     completedRounds: 0,
     status: "waiting",
+    currentTopic: null,
 };
 
 io.on("connection", (socket) => {
@@ -55,10 +58,10 @@ io.on("connection", (socket) => {
         io.emit("roomUpdate", getRoomState());
     });
     socket.on("submitAnswer", ({ answer }: { answer: string }) => {
-        const participant = gameState.participants.get(socket.id);
-        if (!participant) return;
-        participant.hasSubmitted = true;
-        participant.answer = answer;
+        const answerer = gameState.participants.get(socket.id);
+        if (!answerer) return;
+        answerer.hasSubmitted = true;
+        answerer.answer = answer;
         io.emit("roomUpdate", getRoomState());
     });
     socket.on("finishAnswer", () => {
@@ -96,6 +99,7 @@ io.on("connection", (socket) => {
                     currentRound: 0,
                     completedRounds: 0,
                     status: "waiting",
+                    currentTopic: null,
                 };
             } else {
                 io.emit("roomUpdate", getRoomState());
@@ -105,7 +109,7 @@ io.on("connection", (socket) => {
 });
 
 //replacer
-function getRoomState() {
+function getRoomState(): Room {
     const room = gameState;
     return {
         ...room,

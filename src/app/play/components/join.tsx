@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import { useRef } from "react";
-import { useSocket } from "./hooks/useSocket";
+import { useSocket } from "../hooks/useSocket";
 
 export function Join({ onJoin }: { onJoin: () => void }) {
     const inputRef = useRef<HTMLInputElement>(null);
