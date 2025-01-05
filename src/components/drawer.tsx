@@ -16,7 +16,7 @@ interface DrawingCanvasProps {
 }
 
 const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
-    const tool = "pen"
+    const tool = "pen";
     const [lines, setLines] = useState<any[]>([]);
     const isDrawing = useRef(false);
     //ref
@@ -94,9 +94,9 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
     //me
     const handleHand = async () => {
         if (stageRef.current) {
-            onSubmit(stageRef.current.toCanvas().toDataURL())
+            onSubmit(stageRef.current.toCanvas().toDataURL());
         }
-    }
+    };
 
     return (
         <>
@@ -124,13 +124,14 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                                 lineCap="round"
                                 lineJoin="round"
                                 globalCompositeOperation={
-                                    line.tool === "eraser" ? "destination-out" : "source-over"
+                                    line.tool === "eraser"
+                                        ? "destination-out"
+                                        : "source-over"
                                 }
                             />
                         ))}
                     </Layer>
                 </Stage>
-
             </div>
             <div className="flex place-content-center items-center">
                 <div className="bg-white inline-block rounded-full p-2 m-4">
@@ -146,10 +147,11 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                         <IconButton onClick={handleUndo}>
                             <FaUndo />
                         </IconButton>
-
                     </div>
                 </div>
-                <Button onClick={handleHand} variant="outlined">回答</Button>
+                <Button onClick={handleHand} variant="outlined">
+                    回答
+                </Button>
             </div>
             <p className="text-center">最後に回答したものが送信されます</p>
         </>

@@ -5,28 +5,31 @@ import { getRandomTopic } from "./topics.ts";
 const io = new Server({
     cors: {
         origin: "*",
-        methods: ["GET", "POST"]
-    }
+        methods: ["GET", "POST"],
+    },
 });
 
 interface GameState {
-    participants: Map<string, {
-        name: string;
-        hasSubmitted?: boolean;
-        answer?: string;
-    }>;
+    participants: Map<
+        string,
+        {
+            name: string;
+            hasSubmitted?: boolean;
+            answer?: string;
+        }
+    >;
     currentTopic?: string;
     currentRound: number;
     completedRounds: number;
-    status: 'waiting' | 'playing' | 'reviewing' | 'finished';
+    status: "waiting" | "playing" | "reviewing" | "finished";
 }
-const map = new Map()
+const map = new Map();
 
 let gameState: GameState = {
     participants: map,
     currentRound: 0,
     completedRounds: 0,
-    status: "waiting"
+    status: "waiting",
 };
 
 io.on("connection", (socket) => {
@@ -35,10 +38,10 @@ io.on("connection", (socket) => {
             name: joinName,
         });
         io.emit("roomUpdate", getRoomState());
-        console.log(gameState)
+        console.log(gameState);
     });
     socket.on("GameStart", () => {
-        gameState.status = 'playing';
+        gameState.status = "playing";
         gameState.currentTopic = getRandomTopic();
         gameState.currentRound++;
         io.emit("roomUpdate", getRoomState());
@@ -49,32 +52,32 @@ io.on("connection", (socket) => {
         participant.hasSubmitted = true;
         participant.answer = answer;
         io.emit("roomUpdate", getRoomState());
-    })
+    });
     socket.on("finishAnswer", () => {
-        gameState.status = 'reviewing';
+        gameState.status = "reviewing";
         io.emit("roomUpdate", getRoomState());
-    })
+    });
     socket.on("complete", () => {
-        gameState.status = 'playing';
+        gameState.status = "playing";
         gameState.currentTopic = getRandomTopic();
         gameState.currentRound++;
         gameState.completedRounds++;
-        gameState.participants.forEach(p => {
+        gameState.participants.forEach((p) => {
             p.hasSubmitted = false;
             p.answer = undefined;
         });
-        io.emit("roomUpdate", getRoomState())
-    })
+        io.emit("roomUpdate", getRoomState());
+    });
     socket.on("next", () => {
-        gameState.status = 'playing';
+        gameState.status = "playing";
         gameState.currentTopic = getRandomTopic();
         gameState.currentRound++;
-        gameState.participants.forEach(p => {
+        gameState.participants.forEach((p) => {
             p.hasSubmitted = false;
             p.answer = undefined;
         });
-        io.emit("roomUpdate", getRoomState())
-    })
+        io.emit("roomUpdate", getRoomState());
+    });
 
     socket.on("disconnect", () => {
         if (gameState.participants.has(socket.id)) {
@@ -84,27 +87,29 @@ io.on("connection", (socket) => {
                     participants: map,
                     currentRound: 0,
                     completedRounds: 0,
-                    status: "waiting"
+                    status: "waiting",
                 };
             } else {
                 io.emit("roomUpdate", getRoomState());
             }
         }
     });
-})
+});
 
 //replacer
 function getRoomState() {
     const room = gameState;
     return {
         ...room,
-        participants: Array.from(room.participants.entries()).map(([id, data]) => ({
-            id,
-            ...data
-        }))
+        participants: Array.from(room.participants.entries()).map(
+            ([id, data]) => ({
+                id,
+                ...data,
+            })
+        ),
     };
 }
 
 await serve(io.handler(), {
-    port: 8000
+    port: 8000,
 });

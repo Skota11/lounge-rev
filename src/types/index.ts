@@ -3,7 +3,7 @@ export interface Room {
     currentTopic?: string;
     currentRound: number;
     completedRounds: number;
-    status: 'waiting' | 'playing' | 'reviewing' | 'finished';
+    status: "waiting" | "playing" | "reviewing" | "finished";
 }
 
 export interface Participant {
