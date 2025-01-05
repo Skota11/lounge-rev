@@ -5,16 +5,18 @@ import { createContext, use, useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 export type MySocket = Socket<ServerToClient, ClientToServer>;
 const socketCtx = createContext<MySocket | null>(null);
-export function SocketProvider() {
+export function SocketProvider({ children }: { children: React.ReactNode }) {
     const [socket, setSocket] = useState<MySocket | null>(null);
 
     useEffect(() => {
         setSocket(io(process.env.NEXT_PUBLIC_SOCKET_SERVER));
-    }, [socket]);
+    }, []);
     if (socket !== null) {
-        return <socketCtx.Provider value={socket}></socketCtx.Provider>;
+        return (
+            <socketCtx.Provider value={socket}>{children}</socketCtx.Provider>
+        );
     }
-    return <></>;
+    return null;
 }
 
 export function useSocket() {

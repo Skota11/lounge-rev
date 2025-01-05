@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
     const router = useRouter();
-    const handleCreateRoom = async () => {
+    const handleCreateRoom = () => {
         router.push(`/play`);
     };
     return (

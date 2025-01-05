@@ -9,7 +9,7 @@ import { getRandomTopic } from "./topics.ts";
 
 type MyServer = import("socket.io").Server<ClientToServer, ServerToClient>;
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const io: MyServer = new Server({
     cors: {
         origin: "*",
