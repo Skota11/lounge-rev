@@ -1,13 +1,22 @@
+// @ts-expect-error deno integration
 import { serve } from "https://deno.land/std@0.140.0/http/server.ts";
+
+// @ts-expect-error deno integration
 import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
+import type { ClientToServer, ServerToClient } from "../src/types/socketio.ts";
+// @ts-expect-error deno integration
 import { getRandomTopic } from "./topics.ts";
 
-const io = new Server({
+type MyServer = import("socket.io").Server<ClientToServer, ServerToClient>;
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const io: MyServer = new Server({
     cors: {
         origin: "*",
         methods: ["GET", "POST"],
     },
-});
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as any;
 
 interface GameState {
     participants: Map<
@@ -23,17 +32,16 @@ interface GameState {
     completedRounds: number;
     status: "waiting" | "playing" | "reviewing" | "finished";
 }
-const map = new Map();
 
 let gameState: GameState = {
-    participants: map,
+    participants: new Map(),
     currentRound: 0,
     completedRounds: 0,
     status: "waiting",
 };
 
 io.on("connection", (socket) => {
-    socket.on("joinRoom", ({ joinName }: { joinName: string }) => {
+    socket.on("joinRoom", ({ joinName }) => {
         gameState.participants.set(socket.id, {
             name: joinName,
         });
@@ -84,7 +92,7 @@ io.on("connection", (socket) => {
             gameState.participants.delete(socket.id);
             if (gameState.participants.size === 0) {
                 gameState = {
-                    participants: map,
+                    participants: gameState.participants,
                     currentRound: 0,
                     completedRounds: 0,
                     status: "waiting",
@@ -109,7 +117,8 @@ function getRoomState() {
         ),
     };
 }
-
+// @ts-expect-error deno integration
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 await serve(io.handler(), {
     port: 8000,
 });

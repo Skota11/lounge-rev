@@ -1,30 +1,37 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 
-import { Stage, Layer, Line } from "react-konva";
-import Konva from "konva";
+import type Konva from "konva";
+import { Layer, Line, Stage } from "react-konva";
 
 import IconButton from "@mui/material/IconButton";
 
-import { LuPencil } from "react-icons/lu";
-import { FaUndo, FaMagic } from "react-icons/fa";
 import { Button } from "@mui/material";
+import { FaMagic, FaUndo } from "react-icons/fa";
+import { LuPencil } from "react-icons/lu";
 
 interface DrawingCanvasProps {
     onSubmit: (imageData: string) => void;
 }
+type Line = {
+    tool: "pen" | "eraser";
+    points: number[];
+    color: string;
+    strokeWidth: number;
+};
 
 const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
     const tool = "pen";
-    const [lines, setLines] = useState<any[]>([]);
+    const [lines, setLines] = useState<Line[]>([]);
     const isDrawing = useRef(false);
     //ref
     const stageRef = useRef<Konva.Stage>(null);
 
-    const handleMouseDown = (e: any) => {
+    const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
         isDrawing.current = true;
-        const position = e.target.getStage().getPointerPosition();
+        const stg = e.target.getStage()!;
+        const position = stg.getPointerPosition()!;
         setLines([
             ...lines,
             {
@@ -36,21 +43,21 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
         ]);
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
         if (!isDrawing.current) {
             return;
         }
-        const position = e.target.getStage().getPointerPosition();
-        let lastLine = lines[lines.length - 1];
+        const position = e.target.getStage()!.getPointerPosition()!;
+        const lastLine = lines.at(-1)!;
         lastLine.points = lastLine.points.concat([position.x, position.y]);
 
         lines.splice(lines.length - 1, 1, lastLine);
         setLines(lines.concat());
     };
-    const handleTouchStart = (e: any) => {
+    const handleTouchStart = (e: Konva.KonvaEventObject<TouchEvent>) => {
         e.evt.preventDefault();
         isDrawing.current = true;
-        const position = e.target.getStage().getPointerPosition();
+        const position = e.target.getStage()!.getPointerPosition()!;
         setLines([
             ...lines,
             {
@@ -62,19 +69,19 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
         ]);
     };
 
-    const handleTouchMove = (e: any) => {
+    const handleTouchMove = (e: Konva.KonvaEventObject<TouchEvent>) => {
         e.evt.preventDefault();
         if (!isDrawing.current) {
             return;
         }
-        const point = e.target.getStage().getPointerPosition();
+        const point = e.target.getStage()!.getPointerPosition()!;
         const lastLine = lines[lines.length - 1];
         lastLine.points = lastLine.points.concat([point.x, point.y]);
         lines.splice(lines.length - 1, 1, lastLine);
         setLines([...lines]);
     };
 
-    const handleTouchEnd = (e: any) => {
+    const handleTouchEnd = (e: Konva.KonvaEventObject<TouchEvent>) => {
         e.evt.preventDefault();
         isDrawing.current = false;
     };
@@ -92,7 +99,7 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
     };
 
     //me
-    const handleHand = async () => {
+    const handleHand = () => {
         if (stageRef.current) {
             onSubmit(stageRef.current.toCanvas().toDataURL());
         }
@@ -105,7 +112,7 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                     width={480}
                     height={270}
                     onMouseDown={handleMouseDown}
-                    onMousemove={handleMouseMove}
+                    onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}

@@ -1,8 +1,8 @@
 "use client";
 
+import ThemeButton from "@/components/changeThemeButton";
 import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
-import ThemeButton from "@/components/changeThemeButton";
 
 export default function Home() {
     const router = useRouter();

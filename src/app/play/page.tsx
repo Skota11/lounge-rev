@@ -1,38 +1,39 @@
 "use client";
 
+import ThemeButton from "@/components/changeThemeButton";
+import Drawer from "@/components/drawer";
+import { Room } from "@/types";
 import Button from "@mui/material/Button";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
-import { Room } from "@/types";
-import Image from "next/image";
-import Drawer from "@/components/drawer";
-import ThemeButton from "@/components/changeThemeButton";
+import type { MySocket } from "./hooks/useSocket";
 
-const socket = io("https://lounge-rev.deno.dev/");
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER) as MySocket;
 
 export default function Home() {
     const [isJoined, setIsJoined] = useState(false);
     const [joinName, setJoinName] = useState("");
-    const handleJoin = async () => {
+    const handleJoin = () => {
         if (!joinName) return;
         socket.emit("joinRoom", { joinName });
         setIsJoined(true);
     };
     //game
     const [room, setRoom] = useState<Room | null>(null);
-    const handleGameStart = async () => {
+    const handleGameStart = () => {
         socket.emit("GameStart");
     };
     const submitAnswer = (imageData: string) => {
         socket.emit("submitAnswer", { answer: imageData });
     };
-    const handleFinishAnswer = async () => {
+    const handleFinishAnswer = () => {
         socket.emit("finishAnswer");
     };
-    const handleComplete = async () => {
+    const handleComplete = () => {
         socket.emit("complete");
     };
-    const handleNext = async () => {
+    const handleNext = () => {
         socket.emit("next");
     };
     //socket.io
@@ -42,7 +43,7 @@ export default function Home() {
         });
 
         return () => {
-            socket.off("room-update");
+            socket.off("roomUpdate");
         };
     }, []);
     //dom
