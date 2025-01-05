@@ -1,5 +1,6 @@
 import type { Room } from ".";
 
+// TODO: 実装で型のバリデーションを行わないと危険
 interface C2S {
     joinRoom: [{ joinName: string }];
     GameStart: [];
@@ -8,14 +9,10 @@ interface C2S {
     complete: [];
     next: [];
 }
-export type ClientToServer = { [K in keyof C2S]: (...args: C2S[K]) => void };
-// export interface ClientToServer {
-//     joinRoom: (arg: { joinName: string }) => void;
-//     GameStart: () => void;
-//     submitAnswer: (arg: { answer: string }) => void;
-//     finishAnswer: () => void;
-//     complete: () => void;
-// }
-export interface ServerToClient {
-    roomUpdate: (arg: Room) => void;
+
+export interface S2C {
+    roomUpdate: [Room];
 }
+
+export type ClientToServer = { [K in keyof C2S]: (...args: C2S[K]) => void };
+export type ServerToClient = { [K in keyof S2C]: (...args: S2C[K]) => void };
