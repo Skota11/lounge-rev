@@ -1,32 +1,38 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
-import { Stage, Layer, Line } from "react-konva";
-import Konva from "konva";
+import type Konva from "konva";
+import { Layer, Line, Stage } from "react-konva";
 
 import IconButton from "@mui/material/IconButton";
 
-import { LuPencil } from "react-icons/lu";
-import { FaUndo, FaMagic } from "react-icons/fa";
 import { Button } from "@mui/material";
+import { FaMagic, FaUndo } from "react-icons/fa";
+import { LuPencil } from "react-icons/lu";
 
 interface DrawingCanvasProps {
     onSubmit: (imageData: string) => void;
 }
+type Line = {
+    tool: "pen" | "eraser";
+    points: number[];
+    color: string;
+    strokeWidth: number;
+};
 
-const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
-    const tool = "pen"
-    const [lines, setLines] = useState<any[]>([]);
+export default function FreeDrawing({ onSubmit }: DrawingCanvasProps) {
+    const tool = "pen";
+    const [lines, setLines] = useState<Line[]>([]);
     const isDrawing = useRef(false);
     //ref
     const stageRef = useRef<Konva.Stage>(null);
 
-    const handleMouseDown = (e: any) => {
+    const handleDrawing = useCallback((e: Konva.KonvaEventObject<Event>) => {
+        const position = e.target.getStage()!.getPointerPosition()!;
         isDrawing.current = true;
-        const position = e.target.getStage().getPointerPosition();
-        setLines([
-            ...lines,
+        setLines((prevLines) => [
+            ...prevLines,
             {
                 tool,
                 points: [position.x, position.y],
@@ -34,69 +40,64 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                 strokeWidth: 1,
             },
         ]);
-    };
+    }, []);
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = useCallback((e: Konva.KonvaEventObject<Event>) => {
         if (!isDrawing.current) {
             return;
         }
-        const position = e.target.getStage().getPointerPosition();
-        let lastLine = lines[lines.length - 1];
-        lastLine.points = lastLine.points.concat([position.x, position.y]);
+        const position = e.target.getStage()!.getPointerPosition()!;
+        setLines((prevLines) => {
+            const lastLine = prevLines[prevLines.length - 1];
+            const newLine = {
+                ...lastLine,
+                points: [...lastLine.points, position.x, position.y],
+            };
+            return [...prevLines.slice(0, -1), newLine];
+        });
+    }, []);
 
-        lines.splice(lines.length - 1, 1, lastLine);
-        setLines(lines.concat());
-    };
-    const handleTouchStart = (e: any) => {
-        e.evt.preventDefault();
-        isDrawing.current = true;
-        const position = e.target.getStage().getPointerPosition();
-        setLines([
-            ...lines,
-            {
-                tool,
-                points: [position.x, position.y],
-                color: "#333",
-                strokeWidth: 1,
-            },
-        ]);
-    };
-
-    const handleTouchMove = (e: any) => {
-        e.evt.preventDefault();
-        if (!isDrawing.current) {
-            return;
-        }
-        const point = e.target.getStage().getPointerPosition();
-        const lastLine = lines[lines.length - 1];
-        lastLine.points = lastLine.points.concat([point.x, point.y]);
-        lines.splice(lines.length - 1, 1, lastLine);
-        setLines([...lines]);
-    };
-
-    const handleTouchEnd = (e: any) => {
-        e.evt.preventDefault();
+    const handleDrawEnd = useCallback(() => {
         isDrawing.current = false;
-    };
+    }, []);
 
-    const handleMouseUp = () => {
-        isDrawing.current = false;
-    };
+    const handleTouchStart = useCallback(
+        (e: Konva.KonvaEventObject<Event>) => {
+            e.evt.preventDefault();
+            handleDrawing(e);
+        },
+        [handleDrawing]
+    );
 
-    const onClickResetCanvas = () => {
+    const handleTouchMove = useCallback(
+        (e: Konva.KonvaEventObject<TouchEvent>) => {
+            e.evt.preventDefault();
+            handleMouseMove(e);
+        },
+        [handleMouseMove]
+    );
+
+    const handleTouchEnd = useCallback(
+        (e: Konva.KonvaEventObject<TouchEvent>) => {
+            e.evt.preventDefault();
+            handleDrawEnd();
+        },
+        [handleDrawEnd]
+    );
+
+    const handleResetCanvas = useCallback(() => {
         setLines([]);
-    };
+    }, []);
 
-    const handleUndo = () => {
-        setLines(lines.slice(0, lines.length - 1));
-    };
+    const handleUndo = useCallback(() => {
+        setLines((prevLines) => prevLines.slice(0, prevLines.length - 1));
+    }, []);
 
-    //me
-    const handleHand = async () => {
+    const handleHand = useCallback(() => {
         if (stageRef.current) {
-            onSubmit(stageRef.current.toCanvas().toDataURL())
+            onSubmit(stageRef.current.toCanvas().toDataURL());
         }
-    }
+    }, [onSubmit]);
 
     return (
         <>
@@ -104,9 +105,9 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                 <Stage
                     width={480}
                     height={270}
-                    onMouseDown={handleMouseDown}
-                    onMousemove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
+                    onMouseDown={handleDrawing}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleDrawEnd}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
@@ -124,13 +125,14 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                                 lineCap="round"
                                 lineJoin="round"
                                 globalCompositeOperation={
-                                    line.tool === "eraser" ? "destination-out" : "source-over"
+                                    line.tool === "eraser"
+                                        ? "destination-out"
+                                        : "source-over"
                                 }
                             />
                         ))}
                     </Layer>
                 </Stage>
-
             </div>
             <div className="flex place-content-center items-center">
                 <div className="bg-white inline-block rounded-full p-2 m-4">
@@ -140,20 +142,19 @@ const FreeDrawingComponent = ({ onSubmit }: DrawingCanvasProps) => {
                         >
                             <LuPencil />
                         </IconButton>
-                        <IconButton onClick={onClickResetCanvas}>
+                        <IconButton onClick={handleResetCanvas}>
                             <FaMagic />
                         </IconButton>
                         <IconButton onClick={handleUndo}>
                             <FaUndo />
                         </IconButton>
-
                     </div>
                 </div>
-                <Button onClick={handleHand} variant="outlined">回答</Button>
+                <Button onClick={handleHand} variant="outlined">
+                    回答
+                </Button>
             </div>
             <p className="text-center">最後に回答したものが送信されます</p>
         </>
     );
-};
-
-export default FreeDrawingComponent;
+}

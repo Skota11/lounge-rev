@@ -124,7 +124,6 @@ export const topics = [
     "スポーツブランドの定番といえば？",
     "山手線の定番の駅といえば？",
     "学校で飼うペットの定番といえば？",
-
 ];
 
 export const getRandomTopic = () => {

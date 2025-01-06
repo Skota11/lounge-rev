@@ -1,9 +1,9 @@
 export interface Room {
     participants: Participant[];
-    currentTopic?: string;
+    currentTopic: string | null;
     currentRound: number;
     completedRounds: number;
-    status: 'waiting' | 'playing' | 'reviewing' | 'finished';
+    status: "waiting" | "playing" | "reviewing" | "finished";
 }
 
 export interface Participant {
