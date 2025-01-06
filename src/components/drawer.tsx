@@ -37,7 +37,7 @@ export default function FreeDrawing({ onSubmit }: DrawingCanvasProps) {
                 tool,
                 points: [position.x, position.y],
                 color: "#333",
-                strokeWidth: 1,
+                strokeWidth: 2,
             },
         ]);
     }, []);

@@ -24,7 +24,7 @@ export default function Reviewing({ room }: { room: Room }) {
                     >
                         <div>
                             <h4>{participant.name}</h4>
-                            {participant.answer && (
+                            {participant.answer ? (
                                 <Image
                                     width={480}
                                     height={270}
@@ -32,7 +32,10 @@ export default function Reviewing({ room }: { room: Room }) {
                                     alt={`${participant.name}の回答`}
                                     className="border-2 rounded-md bg-white"
                                 />
-                            )}
+                            ) :
+                                (<div>
+                                    <p>回答なし</p>
+                                </div>)}
                         </div>
                     </div>
                 ))}
