@@ -9,7 +9,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     const [socket, setSocket] = useState<MySocket | null>(null);
 
     useEffect(() => {
-        setSocket(io(process.env.NEXT_PUBLIC_SOCKET_SERVER));
+        setSocket(io(process.env.NEXT_PUBLIC_SOCKET_SERVER, { path: "/socket" }));
     }, []);
     if (socket !== null) {
         return (
