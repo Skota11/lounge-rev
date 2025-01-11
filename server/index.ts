@@ -17,7 +17,7 @@ const io: MyServer = new Server({
         origin: "*",
         methods: ["GET", "POST"],
     },
-    path: "/socket"
+    path: "/socket/"
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }) as any;
 
