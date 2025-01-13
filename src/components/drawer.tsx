@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 
 import type Konva from "konva";
-import { Layer, Line, Stage } from "react-konva";
+import { Layer, Line, Rect, Stage } from "react-konva";
 
 import IconButton from "@mui/material/IconButton";
 
@@ -115,6 +115,12 @@ export default function FreeDrawing({ onSubmit }: DrawingCanvasProps) {
                     className="border-2 rounded-md bg-white"
                 >
                     <Layer>
+                        <Rect
+                            width={480}
+                            height={270}
+                            fill={"white"}
+                            strokeWidth={0}
+                        />
                         {lines.map((line, i) => (
                             <Line
                                 key={i}
